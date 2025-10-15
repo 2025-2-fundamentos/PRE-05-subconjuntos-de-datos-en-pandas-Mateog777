@@ -1,59 +1,27 @@
-# %%
-import pandas as pd  #  type: ignore
+# homework/demo.py
+import os
+import pandas as pd
 
 pd.set_option("display.notebook_repr_html", True)
 
-# %%
+def generate_csv():
+    # Rutas robustas relativas al repo
+    BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # sube desde homework/ a la raíz del repo
 
-# Carga del archivo desde un repo en GitHub
-truck_events = pd.read_csv("files/input/truck_event_text_partition.csv")
+    input_path = os.path.join(BASE_DIR, "files", "input", "truck_event_text_partition.csv")
+    output_dir = os.path.join(BASE_DIR, "files", "output")
+    output_path = os.path.join(output_dir, "specific-columns.csv")
 
-# Cabecera del archivo
-truck_events.head()
+    # Carga
+    truck_events = pd.read_csv(input_path)
 
-# %%
+    # Subconjuntos
+    truck_events_subset = truck_events[0:10]
+    specific_columns = truck_events_subset[["driverId", "eventTime", "eventType"]]
 
-# Obtención de un subconjunto de registros
-# truck_events_subset = truck_events.head(10) 
-truck_events_subset = truck_events[0:10]
-truck_events_subset
+    # Asegura carpeta y escribe CSV
+    os.makedirs(output_dir, exist_ok=True)
+    specific_columns.to_csv(output_path, sep=",", header=True, index=False)
 
-# %%
-
-# Obtención de un subconjunto de columnas
-specific_columns = truck_events_subset[
-    ["driverId", "eventTime", "eventType"]
-]
-specific_columns
-
-# %%
-
-# Obtención de un subconjunto de filas y columnas
-new_sub_set = truck_events.loc[0:10, ["driverId", "eventTime", "eventType"]]
-new_sub_set
-
-# %%
-
-# Obtención de un campo de un registro en particular
-truck_events.iloc[1]
-
-# %%
-
-truck_events.iloc[1]["eventKey"]
-
-# %%
-
-# Escritura de la tabla en el disco
-import os
-
-# %%
-
-if not os.path.exists("files/output/"):
-    os.makedirs("files/output/")
-
-specific_columns.to_csv(
-    "files/output/specific-columns.csv",
-    sep=",",
-    header=True,
-    index=True,
-)
+if __name__ == "__main__":
+    generate_csv()
